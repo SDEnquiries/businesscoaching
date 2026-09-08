@@ -8,13 +8,21 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          50: '#f5f0f7',
-          100: '#e9dcee',
-          200: '#d3b9dd',
-          500: '#6b2c82',
-          600: '#5a2470',
-          700: '#481c5b',
+          50: '#f4f0fa',
+          100: '#e6dcf2',
+          200: '#c9b3e0',
+          500: '#4a2d7f',
+          600: '#3d2569',
+          700: '#2f1d52',
         },
+        gold: {
+          50: '#fbf6e9',
+          100: '#f3e6c3',
+          light: '#e8d48a',
+          DEFAULT: '#b8982a',
+          dark: '#8a6e1a',
+        },
+        plat: '#9ba8a0',
         accent: {
           blue: '#2ea3d8',
           green: '#8dc63f',

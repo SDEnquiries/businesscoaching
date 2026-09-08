@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import Logo from './Logo';
 
 export default function NavBar({ name, role }: { name: string; role?: string }) {
   const router = useRouter();
@@ -17,9 +17,11 @@ export default function NavBar({ name, role }: { name: string; role?: string }) 
 
   return (
     <nav className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-      <Link href="/dashboard" className="flex items-center gap-2">
-        <Image src="/logo.png" alt="Switch Direction" width={36} height={36} className="object-contain" />
-        <span className="font-semibold text-brand-700 hidden sm:inline">Switch Direction</span>
+      <Link href="/dashboard" className="hidden sm:block">
+        <Logo size={36} textSize="sm" />
+      </Link>
+      <Link href="/dashboard" className="sm:hidden">
+        <Logo size={36} showText={false} />
       </Link>
       <div className="flex items-center gap-4 text-sm">
         <span className="text-gray-600 hidden md:inline">Hi, {name}</span>

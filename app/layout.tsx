@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Switch Direction | Coaching Portal',
-  description: 'Homework, progress tracking, and profiles for coaches and coachees.',
+  title: 'Business Coaching Accelerator | powered by Switch Direction',
+  description: 'Homework, progress tracking, targets, and profiles for coaches and coachees on the Business Coaching Accelerator programme.',
   manifest: '/manifest.json',
   icons: {
     icon: [
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#6b2c82',
+  themeColor: '#4a2d7f',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

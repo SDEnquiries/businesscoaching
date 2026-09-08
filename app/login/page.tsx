@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
+import Logo from '@/components/Logo';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,7 +31,9 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen flex items-center justify-center px-4">
       <form onSubmit={handleSubmit} className="card w-full max-w-sm">
-        <Image src="/logo.png" alt="Switch Direction" width={140} height={95} className="mx-auto mb-4" />
+        <div className="mb-4 flex justify-center">
+          <Logo size={72} textSize="lg" align="center" />
+        </div>
         <h1 className="text-xl font-semibold mb-6 text-center">Log in</h1>
 
         <label className="label">Email</label>

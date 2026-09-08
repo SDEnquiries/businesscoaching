@@ -3,8 +3,8 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
+import Logo from '@/components/Logo';
 
 type Coach = { id: string; full_name: string };
 
@@ -100,7 +100,9 @@ function SignupForm() {
   return (
     <main className="min-h-screen flex items-center justify-center px-4 py-10">
       <form onSubmit={handleSubmit} className="card w-full max-w-sm">
-        <Image src="/logo.png" alt="Switch Direction" width={140} height={95} className="mx-auto mb-4" />
+        <div className="mb-4 flex justify-center">
+          <Logo size={72} textSize="lg" align="center" />
+        </div>
         <h1 className="text-xl font-semibold mb-6 text-center">Create an account</h1>
 
         {!inviteToken && (
