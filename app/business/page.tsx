@@ -21,7 +21,7 @@ export default async function BusinessHubPage() {
     <main className="min-h-screen">
       <NavBar name={profile.full_name} role={profile.role} />
       <div className="max-w-md mx-auto px-4 py-8 space-y-6">
-        <h1 className="text-2xl font-semibold">Your businesses</h1>
+        <h1 className="text-2xl font-semibold page-heading">Your businesses</h1>
 
         {memberships && memberships.length > 0 ? (
           <div className="grid gap-3">
@@ -32,7 +32,7 @@ export default async function BusinessHubPage() {
             ))}
           </div>
         ) : (
-          <p className="text-gray-500 text-sm">You're not part of any business yet.</p>
+          <p className="page-subtext text-sm">You're not part of any business yet.</p>
         )}
 
         <div className="card">

@@ -43,8 +43,8 @@ export default async function ArchivePage() {
       <NavBar name={profile.full_name} role={profile.role} />
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-4">
         <div>
-          <h1 className="text-2xl font-semibold">Archive</h1>
-          <p className="text-gray-500 text-sm mt-1">
+          <h1 className="text-2xl font-semibold page-heading">Archive</h1>
+          <p className="page-subtext text-sm mt-1">
             Coachees who've been removed from a roster. Any coach can assign someone from here
             to themselves or a teammate.
           </p>
@@ -72,7 +72,7 @@ export default async function ArchivePage() {
               </div>
             ))
           ) : (
-            <p className="text-gray-500">Nothing in the archive right now.</p>
+            <p className="page-subtext">Nothing in the archive right now.</p>
           )}
         </div>
       </div>

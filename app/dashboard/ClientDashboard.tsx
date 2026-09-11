@@ -220,12 +220,6 @@ export default async function ClientDashboard({ profile }: { profile: any }) {
             View resources →
           </Link>
         </ExpandableCard>
-
-        <ExpandableCard icon="👤" title="Your profile" summary="Photo, name, and bio">
-          <Link href="/profile" className="text-brand-600 text-sm hover:underline inline-block">
-            Edit your profile →
-          </Link>
-        </ExpandableCard>
       </div>
     </main>
   );

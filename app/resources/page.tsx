@@ -37,7 +37,7 @@ export default async function ResourcesPage() {
       <main className="min-h-screen">
         <NavBar name={profile.full_name} role={profile.role} />
         <div className="max-w-3xl mx-auto px-4 py-8 space-y-8">
-          <h1 className="text-2xl font-semibold">Resources</h1>
+          <h1 className="text-2xl font-semibold page-heading">Resources</h1>
           <div className="card">
             <h2 className="font-medium mb-3">Share a new resource</h2>
             <ResourceForm clients={clients ?? []} />
@@ -48,7 +48,7 @@ export default async function ResourcesPage() {
                 <ResourceItem key={r.id} resource={r} canDelete fileHref={r.fileHref} />
               ))
             ) : (
-              <p className="text-gray-500">Nothing shared yet.</p>
+              <p className="page-subtext">Nothing shared yet.</p>
             )}
           </div>
         </div>
@@ -74,12 +74,12 @@ export default async function ResourcesPage() {
     <main className="min-h-screen">
       <NavBar name={profile.full_name} role={profile.role} />
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-4">
-        <h1 className="text-2xl font-semibold">Resources from your coach</h1>
+        <h1 className="text-2xl font-semibold page-heading">Resources from your coach</h1>
         <div className="grid gap-3">
           {filesWithUrls.length > 0 ? (
             filesWithUrls.map((r) => <ResourceItem key={r.id} resource={r} canDelete={false} fileHref={r.fileHref} />)
           ) : (
-            <p className="text-gray-500">Nothing shared yet.</p>
+            <p className="page-subtext">Nothing shared yet.</p>
           )}
         </div>
       </div>

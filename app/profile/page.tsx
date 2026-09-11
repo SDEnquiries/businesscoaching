@@ -20,7 +20,7 @@ export default async function ProfilePage() {
     <main className="min-h-screen">
       <NavBar name={profile.full_name} role={profile.role} />
       <div className="max-w-md mx-auto px-4 py-8">
-        <h1 className="text-2xl font-semibold mb-6">Your profile</h1>
+        <h1 className="text-2xl font-semibold mb-6 page-heading">Your profile</h1>
         <div className="card">
           <ProfileForm profile={profile} />
         </div>

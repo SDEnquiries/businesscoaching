@@ -35,7 +35,7 @@ export default function BusinessPicker({
 
   if (!open) {
     return (
-      <button onClick={() => setOpen(true)} className="text-xs text-brand-600 hover:underline whitespace-nowrap">
+      <button onClick={() => setOpen(true)} className="text-xs page-link whitespace-nowrap">
         Swap business{currentName ? ` (currently ${currentName})` : ''}
       </button>
     );
@@ -54,7 +54,7 @@ export default function BusinessPicker({
       <button onClick={handleSubmit} disabled={submitting} className="btn-primary text-sm whitespace-nowrap">
         {submitting ? '…' : 'Confirm'}
       </button>
-      <button onClick={() => setOpen(false)} className="text-xs text-gray-500 hover:underline">
+      <button onClick={() => setOpen(false)} className="text-xs page-subtext hover:underline">
         Cancel
       </button>
     </div>

@@ -42,10 +42,10 @@ export default async function TeammateRosterPage({
     <main className="min-h-screen">
       <NavBar name={profile.full_name} role={profile.role} />
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-4">
-        <Link href={`/business/${params.id}`} className="text-xs text-brand-600 hover:underline">
+        <Link href={`/business/${params.id}`} className="text-xs page-link">
           ← Back to team
         </Link>
-        <h1 className="text-2xl font-semibold">{teammate?.full_name}'s coachees</h1>
+        <h1 className="text-2xl font-semibold page-heading">{teammate?.full_name}'s coachees</h1>
 
         <div className="grid gap-3">
           {clients && clients.length > 0 ? (
@@ -67,7 +67,7 @@ export default async function TeammateRosterPage({
               </Link>
             ))
           ) : (
-            <p className="text-gray-500">No coachees yet.</p>
+            <p className="page-subtext">No coachees yet.</p>
           )}
         </div>
       </div>

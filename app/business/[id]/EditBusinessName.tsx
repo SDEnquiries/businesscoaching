@@ -25,8 +25,8 @@ export default function EditBusinessName({ businessId, currentName }: { business
   if (!editing) {
     return (
       <div className="flex items-center gap-2">
-        <h1 className="text-2xl font-semibold">{currentName}</h1>
-        <button onClick={() => setEditing(true)} className="text-xs text-brand-600 hover:underline">
+        <h1 className="text-2xl font-semibold page-heading">{currentName}</h1>
+        <button onClick={() => setEditing(true)} className="text-xs page-link">
           Edit
         </button>
       </div>
@@ -49,7 +49,7 @@ export default function EditBusinessName({ businessId, currentName }: { business
           setName(currentName);
           setEditing(false);
         }}
-        className="text-xs text-gray-500 hover:underline"
+        className="text-xs page-subtext hover:underline"
       >
         Cancel
       </button>

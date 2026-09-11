@@ -98,7 +98,7 @@ function SignupForm() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4 py-10">
+    <main className="min-h-screen flex items-center justify-center px-4 py-10 bg-brand-500">
       <form onSubmit={handleSubmit} className="card w-full max-w-sm">
         <div className="mb-4 flex justify-center">
           <Logo size={72} textSize="lg" align="center" />

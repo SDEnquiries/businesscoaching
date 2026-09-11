@@ -3,7 +3,21 @@
 @tailwind utilities;
 
 body {
-  @apply bg-brand-50 text-gray-900;
+  @apply bg-brand-500 text-gray-900;
+}
+
+/* Text sitting directly on the purple page background (i.e. outside a
+   white .card) needs its own light-on-dark treatment so it stays legible. */
+.page-heading {
+  @apply text-white;
+}
+
+.page-subtext {
+  @apply text-white/70;
+}
+
+.page-link {
+  @apply text-gold-light hover:text-white transition;
 }
 
 .text-tagline {

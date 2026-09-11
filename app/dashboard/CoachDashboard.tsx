@@ -94,8 +94,8 @@ export default async function CoachDashboard({ profile }: { profile: any }) {
       <NavBar name={profile.full_name} role={profile.role} />
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-8">
         <div>
-          <h1 className="text-2xl font-semibold">Welcome back, {profile.full_name.split(' ')[0]}</h1>
-          <p className="text-gray-500 text-sm mt-1">Here's how your coachees are progressing.</p>
+          <h1 className="text-2xl font-semibold page-heading">Welcome back, {profile.full_name.split(' ')[0]}</h1>
+          <p className="page-subtext text-sm mt-1">Here's how your coachees are progressing.</p>
         </div>
 
         <div className="grid grid-cols-3 gap-4">
@@ -132,7 +132,7 @@ export default async function CoachDashboard({ profile }: { profile: any }) {
 
         {businesses.length > 0 && (
           <div>
-            <h2 className="text-xl font-semibold mb-3">Coaches</h2>
+            <h2 className="text-xl font-semibold mb-3 page-heading">Coaches</h2>
             <div className="card divide-y divide-gray-100">
               {coachRows.map((row, i) => (
                 <Link
@@ -163,7 +163,7 @@ export default async function CoachDashboard({ profile }: { profile: any }) {
 
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xl font-semibold">Your coachees</h2>
+            <h2 className="text-xl font-semibold page-heading">Your coachees</h2>
           </div>
 
           <div className="card mb-4">
@@ -191,7 +191,7 @@ export default async function CoachDashboard({ profile }: { profile: any }) {
                 </Link>
               ))
             ) : (
-              <p className="text-gray-500">No coachees yet — invite one above.</p>
+              <p className="page-subtext">No coachees yet — invite one above.</p>
             )}
           </div>
         </div>

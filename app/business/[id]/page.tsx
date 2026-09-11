@@ -71,7 +71,7 @@ export default async function BusinessDetailPage({ params }: { params: { id: str
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-8">
         <div className="flex items-center justify-between">
           <div>
-            <Link href="/business" className="text-xs text-brand-600 hover:underline">
+            <Link href="/business" className="text-xs page-link">
               ← All businesses
             </Link>
             <EditBusinessName businessId={params.id} currentName={business?.name ?? ''} />
@@ -80,7 +80,7 @@ export default async function BusinessDetailPage({ params }: { params: { id: str
         </div>
 
         <section>
-          <h2 className="text-xl font-semibold mb-3">Business overview report</h2>
+          <h2 className="text-xl font-semibold mb-3 page-heading">Business overview report</h2>
           <div className="card grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
             <div>
               <p className="text-2xl font-semibold text-brand-600">{coaches.length}</p>
@@ -104,7 +104,7 @@ export default async function BusinessDetailPage({ params }: { params: { id: str
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold mb-3">Team</h2>
+          <h2 className="text-xl font-semibold mb-3 page-heading">Team</h2>
           <div className="grid gap-2 mb-4">
             {coaches.map((c: any) => (
               <Link
@@ -136,7 +136,7 @@ export default async function BusinessDetailPage({ params }: { params: { id: str
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold mb-3">Full roster</h2>
+          <h2 className="text-xl font-semibold mb-3 page-heading">Full roster</h2>
           <div className="grid gap-4">
             {coaches.map((coach: any) => {
               const theirClients = (clients ?? []).filter((c) => c.coach_id === coach.id);

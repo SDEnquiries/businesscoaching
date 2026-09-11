@@ -20,7 +20,7 @@ export default function RemoveClientButton({ clientId, clientName }: { clientId:
 
   if (!confirming) {
     return (
-      <button onClick={() => setConfirming(true)} className="text-xs text-red-500 hover:underline">
+      <button onClick={() => setConfirming(true)} className="text-xs text-red-300 hover:underline">
         Remove from my roster
       </button>
     );
@@ -28,14 +28,14 @@ export default function RemoveClientButton({ clientId, clientName }: { clientId:
 
   return (
     <div className="text-xs">
-      <span className="text-gray-600">
+      <span className="page-subtext">
         Remove {clientName}? They'll move to the shared archive with their account and data
         intact — any coach can pull them back in later.{' '}
       </span>
-      <button onClick={handleRemove} disabled={removing} className="text-red-600 font-medium hover:underline mr-2">
+      <button onClick={handleRemove} disabled={removing} className="text-red-400 font-medium hover:underline mr-2">
         {removing ? 'Removing…' : 'Confirm'}
       </button>
-      <button onClick={() => setConfirming(false)} className="text-gray-500 hover:underline">
+      <button onClick={() => setConfirming(false)} className="page-subtext hover:underline">
         Cancel
       </button>
     </div>

@@ -129,8 +129,8 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
               )}
             </div>
             <div>
-              <h1 className="text-2xl font-semibold">{client.full_name}</h1>
-              {client.bio && <p className="text-gray-600 text-sm">{client.bio}</p>}
+              <h1 className="text-2xl font-semibold page-heading">{client.full_name}</h1>
+              {client.bio && <p className="page-subtext text-sm">{client.bio}</p>}
             </div>
           </div>
           {client.coach_id === user.id && (
@@ -147,7 +147,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
         </div>
 
         <section>
-          <h2 className="text-xl font-semibold mb-3">Report</h2>
+          <h2 className="text-xl font-semibold mb-3 page-heading">Report</h2>
           <div className="card grid grid-cols-2 gap-4 text-center">
             <div>
               <p className="text-2xl font-semibold text-brand-600">
@@ -163,7 +163,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold mb-3">Session notes (visible to your business team)</h2>
+          <h2 className="text-xl font-semibold mb-3 page-heading">Session notes (visible to your business team)</h2>
           <form action={handleAddNote} className="card space-y-3 mb-3">
             <textarea name="note_text" required placeholder="What happened in this session…" className="input" rows={3} />
             <input name="session_date" type="date" className="input" />
@@ -189,21 +189,21 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                 </div>
               ))
             ) : (
-              <p className="text-gray-500">No session notes yet.</p>
+              <p className="page-subtext">No session notes yet.</p>
             )}
           </div>
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold mb-3">Business plan</h2>
+          <h2 className="text-xl font-semibold mb-3 page-heading">Business plan</h2>
           <BusinessPlanForm clientId={params.id} plan={plan ?? {}} canEditContent={false} canEditFeedback />
         </section>
 
         <section>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xl font-semibold">Targets</h2>
+            <h2 className="text-xl font-semibold page-heading">Targets</h2>
             {targetRows.length > 0 && (
-              <span className="text-sm text-gray-500">
+              <span className="text-sm page-subtext">
                 {achievedTargets} of {targetRows.length} achieved
               </span>
             )}
@@ -231,7 +231,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold mb-3">Progress log</h2>
+          <h2 className="text-xl font-semibold mb-3 page-heading">Progress log</h2>
           <div className="grid gap-3">
             {entries && entries.length > 0 ? (
               entries.map((e) => (
@@ -250,7 +250,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
                 </div>
               ))
             ) : (
-              <p className="text-gray-500">No progress entries yet.</p>
+              <p className="page-subtext">No progress entries yet.</p>
             )}
           </div>
         </section>

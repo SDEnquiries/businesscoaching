@@ -55,8 +55,8 @@ export default async function TargetsPage() {
       <NavBar name={profile.full_name} role={profile.role} />
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-8">
         <div>
-          <h1 className="text-2xl font-semibold">Your targets</h1>
-          <p className="text-gray-500 text-sm mt-1">
+          <h1 className="text-2xl font-semibold page-heading">Your targets</h1>
+          <p className="page-subtext text-sm mt-1">
             {rows.length > 0
               ? `${rows.length} month${rows.length === 1 ? '' : 's'} planned, ${achievedCount} achieved.`
               : `Build up to ${PLAN_LENGTH_MONTHS} months of targets — you can always add more later.`}

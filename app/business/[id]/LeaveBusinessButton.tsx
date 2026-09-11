@@ -20,7 +20,7 @@ export default function LeaveBusinessButton({ businessId }: { businessId: string
 
   if (!confirming) {
     return (
-      <button onClick={() => setConfirming(true)} className="text-xs text-red-500 hover:underline whitespace-nowrap">
+      <button onClick={() => setConfirming(true)} className="text-xs text-red-300 hover:underline whitespace-nowrap">
         Leave this business
       </button>
     );
@@ -28,11 +28,11 @@ export default function LeaveBusinessButton({ businessId }: { businessId: string
 
   return (
     <div className="text-xs text-right">
-      <p className="text-gray-600 mb-1">Leave this business?</p>
-      <button onClick={handleLeave} disabled={leaving} className="text-red-600 font-medium hover:underline mr-2">
+      <p className="page-subtext mb-1">Leave this business?</p>
+      <button onClick={handleLeave} disabled={leaving} className="text-red-400 font-medium hover:underline mr-2">
         {leaving ? 'Leaving…' : 'Confirm'}
       </button>
-      <button onClick={() => setConfirming(false)} className="text-gray-500 hover:underline">
+      <button onClick={() => setConfirming(false)} className="page-subtext hover:underline">
         Cancel
       </button>
     </div>
