@@ -9,8 +9,8 @@ export default function Home() {
           <Logo size={96} textSize="xl" align="center" />
         </div>
         <p className="text-gray-600 mb-8">
-          A secure space for coaches and coachees to share homework, track progress,
-          and stay connected between sessions.
+          A secure space for coaches and coachees to track business goals, log
+          progress, and stay connected between sessions.
         </p>
         <div className="flex gap-3 justify-center">
           <Link href="/login" className="btn-primary">

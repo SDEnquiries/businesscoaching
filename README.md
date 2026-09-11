@@ -1,6 +1,6 @@
 # Coaching Portal
 
-A secure web app for coaches to assign homework and track client progress.
+A secure web app for coaches to track client progress and business goals.
 Coaches and clients each get their own account; a coach only ever sees
 their own clients' data (enforced at the database level, not just in the UI).
 
@@ -9,7 +9,7 @@ their own clients' data (enforced at the database level, not just in the UI).
 - Email/password signup and login for two roles: **coach** and **client**
 - Coaches can invite clients by email (shareable link) or clients can self-register and pick a coach from a list
 - Client profile with photo upload, name, and bio
-- Coaches assign homework (title, instructions, due date); clients respond with text and/or a file upload
+- Business information: a free-text field where the coachee describes their business and how they want it to grow, editable by both the coachee and their coach
 - Client progress log: free-text journal entries plus structured fields (mood, energy) and an optional photo per entry
 - Monthly targets: a rolling plan of up to 12 calendar months (extendable indefinitely) with a goal, optional target/actual values, and a status; either the coach or the client can set or update a month
 - Row Level Security in the database means coach A can never read coach B's clients, even via a bug in the app code
@@ -64,7 +64,7 @@ Every time you push to GitHub, Vercel redeploys automatically.
   on every single query, that the logged-in user is only touching rows they're
   allowed to. A coach's queries are physically incapable of returning another
   coach's client data.
-- Uploaded files (avatars, homework attachments, progress photos) are stored in
+- Uploaded files (avatars, progress photos) are stored in
   separate private buckets with the same per-user access rules, except avatars
   which are public (so they can be shown as profile pictures).
 
@@ -72,6 +72,5 @@ Every time you push to GitHub, Vercel redeploys automatically.
 
 Some natural next additions, roughly in order of effort:
 - Password reset emails (Supabase Auth supports this out of the box — just needs a "forgot password" page)
-- Coach-side reminders/notifications when homework is submitted
-- Custom homework question types instead of one text box + one file
-- A "sessions" or "notes" table for the coach's private session notes per client
+- Coach-side reminders/notifications when a coachee updates their business information
+- A version history for business information, instead of a single overwritable field

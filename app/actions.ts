@@ -3,114 +3,24 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 
-export async function assignHomework(formData: FormData) {
+export async function updateBusinessInfo(formData: FormData) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
   const clientId = String(formData.get('client_id'));
-  const title = String(formData.get('title'));
-  const description = String(formData.get('description') ?? '');
-  const dueDate = formData.get('due_date') ? String(formData.get('due_date')) : null;
+  const businessInfo = String(formData.get('business_info') ?? '');
 
-  const { error } = await supabase.from('homework').insert({
-    coach_id: user.id,
-    client_id: clientId,
-    title,
-    description,
-    due_date: dueDate,
-  });
-  if (error) throw error;
-
-  revalidatePath(`/clients/${clientId}`);
-}
-
-export async function submitHomework(formData: FormData) {
-  const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Not authenticated');
-
-  const homeworkId = String(formData.get('homework_id'));
-  const textResponse = String(formData.get('text_response') ?? '');
-  const file = formData.get('file') as File | null;
-
-  let fileUrl: string | null = null;
-  if (file && file.size > 0) {
-    const path = `${user.id}/${Date.now()}-${file.name}`;
-    const { error: uploadError } = await supabase.storage
-      .from('homework-files')
-      .upload(path, file);
-    if (uploadError) throw uploadError;
-    fileUrl = path;
-  }
-
-  const { error } = await supabase.from('homework_submissions').insert({
-    homework_id: homeworkId,
-    client_id: user.id,
-    text_response: textResponse,
-    file_url: fileUrl,
-  });
-  if (error) throw error;
-
-  await supabase.from('homework').update({ status: 'submitted' }).eq('id', homeworkId);
-
-  revalidatePath('/dashboard');
-}
-
-export async function deleteHomework(formData: FormData) {
-  const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Not authenticated');
-
-  const id = String(formData.get('id'));
-  const clientId = String(formData.get('client_id'));
-
-  // Clean up any submitted files before the row (and its submissions) cascade-delete.
-  const { data: submissions } = await supabase
-    .from('homework_submissions')
-    .select('file_url')
-    .eq('homework_id', id);
-
-  const filePaths = (submissions ?? []).map((s) => s.file_url).filter(Boolean) as string[];
-  if (filePaths.length > 0) {
-    await supabase.storage.from('homework-files').remove(filePaths);
-  }
-
-  const { error } = await supabase.from('homework').delete().eq('id', id).eq('coach_id', user.id);
-  if (error) throw error;
-
-  revalidatePath(`/clients/${clientId}`);
-}
-
-export async function deleteHomeworkSubmission(formData: FormData) {
-  const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Not authenticated');
-
-  const submissionId = String(formData.get('submission_id'));
-  const homeworkId = String(formData.get('homework_id'));
-  const fileUrl = formData.get('file_url') ? String(formData.get('file_url')) : null;
-
-  if (fileUrl) {
-    await supabase.storage.from('homework-files').remove([fileUrl]);
-  }
-
+  // RLS (the client owns this row, or is the coach of this client) is what
+  // actually enforces who may write here — same rule as the "bio" field.
   const { error } = await supabase
-    .from('homework_submissions')
-    .delete()
-    .eq('id', submissionId)
-    .eq('client_id', user.id);
+    .from('profiles')
+    .update({ business_info: businessInfo })
+    .eq('id', clientId);
   if (error) throw error;
 
-  // Reopen the homework item so it can be redone.
-  await supabase
-    .from('homework')
-    .update({ status: 'assigned' })
-    .eq('id', homeworkId)
-    .eq('client_id', user.id);
-
-  revalidatePath('/homework');
   revalidatePath('/dashboard');
+  revalidatePath(`/clients/${clientId}`);
 }
 
 export async function deleteSessionNote(formData: FormData) {

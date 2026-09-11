@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import NavBar from '@/components/NavBar';
-import { assignHomework, addSessionNote, deleteHomework, deleteSessionNote } from '@/app/actions';
+import { addSessionNote, deleteSessionNote } from '@/app/actions';
 import RemoveClientButton from './RemoveClientButton';
 import AssignToCoach from '@/components/AssignToCoach';
 import BusinessPicker from '@/components/BusinessPicker';
@@ -9,6 +9,7 @@ import DeleteButton from '@/components/DeleteButton';
 import TargetsList, { type TargetRow } from '@/app/targets/TargetsList';
 import AddTargetForm from '@/app/targets/AddTargetForm';
 import GeneratePlanForm from '@/app/targets/GeneratePlanForm';
+import BusinessInfoForm from '@/app/business-info/BusinessInfoForm';
 
 const PLAN_LENGTH_MONTHS = 12;
 
@@ -34,25 +35,6 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
     .single();
 
   if (!client) redirect('/dashboard');
-
-  const { data: homework } = await supabase
-    .from('homework')
-    .select('*, homework_submissions(*)')
-    .eq('client_id', params.id)
-    .order('created_at', { ascending: false });
-
-  const homeworkWithFileLinks = await Promise.all(
-    (homework ?? []).map(async (hw: any) => {
-      const submissions = await Promise.all(
-        (hw.homework_submissions ?? []).map(async (s: any) => {
-          if (!s.file_url) return { ...s, fileHref: null };
-          const { data } = await supabase.storage.from('homework-files').createSignedUrl(s.file_url, 3600);
-          return { ...s, fileHref: data?.signedUrl ?? null };
-        })
-      );
-      return { ...hw, homework_submissions: submissions };
-    })
-  );
 
   const { data: entries } = await supabase
     .from('progress_entries')
@@ -95,8 +77,6 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
   }
 
   // Quick report stats
-  const totalHomework = homework?.length ?? 0;
-  const completedHomework = homework?.filter((h: any) => h.status !== 'assigned').length ?? 0;
   const avgMood =
     entries && entries.filter((e) => e.mood_rating).length > 0
       ? (
@@ -104,12 +84,6 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
           entries.filter((e) => e.mood_rating).length
         ).toFixed(1)
       : null;
-
-  async function handleAssign(formData: FormData) {
-    'use server';
-    formData.set('client_id', params.id);
-    await assignHomework(formData);
-  }
 
   // Teammates this coach could reassign the coachee to (only relevant if it's your own coachee)
   let assignableCoaches: { id: string; full_name: string }[] = [];
@@ -168,14 +142,12 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
 
         <section>
           <h2 className="text-xl font-semibold mb-3">Report</h2>
-          <div className="card grid grid-cols-3 gap-4 text-center">
+          <div className="card grid grid-cols-2 gap-4 text-center">
             <div>
-              <p className="text-2xl font-semibold text-brand-600">{totalHomework}</p>
-              <p className="text-xs text-gray-500">Homework assigned</p>
-            </div>
-            <div>
-              <p className="text-2xl font-semibold text-brand-600">{completedHomework}</p>
-              <p className="text-xs text-gray-500">Completed</p>
+              <p className="text-2xl font-semibold text-brand-600">
+                {targetRows.length > 0 ? `${achievedTargets}/${targetRows.length}` : '—'}
+              </p>
+              <p className="text-xs text-gray-500">Targets achieved</p>
             </div>
             <div>
               <p className="text-2xl font-semibold text-brand-600">{avgMood ?? '—'}</p>
@@ -217,67 +189,12 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold mb-3">Assign homework</h2>
-          <form action={handleAssign} className="card space-y-3">
-            <input name="title" required placeholder="Title" className="input" />
-            <textarea name="description" placeholder="Instructions" className="input" rows={2} />
-            <div>
-              <label className="label text-xs">Due date (optional)</label>
-              <input name="due_date" type="date" className="input" />
-            </div>
-            <button type="submit" className="btn-primary text-sm">
-              Assign
-            </button>
-          </form>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold mb-3">Homework history</h2>
-          <div className="grid gap-3">
-            {homeworkWithFileLinks.length > 0 ? (
-              homeworkWithFileLinks.map((hw: any) => (
-                <div key={hw.id} className="card">
-                  <div className="flex items-center justify-between">
-                    <p className="font-medium">{hw.title}</p>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">
-                        {hw.status}
-                      </span>
-                      <DeleteButton
-                        action={deleteHomework}
-                        fields={{ id: hw.id, client_id: params.id }}
-                        confirmText="Delete this homework?"
-                      />
-                    </div>
-                  </div>
-                  {hw.description && <p className="text-sm text-gray-600 mt-1">{hw.description}</p>}
-                  {hw.due_date && <p className="text-xs text-gray-400 mt-1">Due {hw.due_date}</p>}
-                  {hw.homework_submissions?.length > 0 && (
-                    <div className="mt-2 border-t pt-2 text-sm text-gray-700">
-                      <p className="text-xs text-gray-400 mb-1">Response:</p>
-                      {hw.homework_submissions.map((s: any) => (
-                        <div key={s.id}>
-                          {s.text_response && <p>{s.text_response}</p>}
-                          {s.fileHref && (
-                            <a
-                              href={s.fileHref}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-brand-600 text-sm underline mt-1 inline-block"
-                            >
-                              Open attachment
-                            </a>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-500">No homework assigned yet.</p>
-            )}
-          </div>
+          <h2 className="text-xl font-semibold mb-3">Business information</h2>
+          <BusinessInfoForm
+            clientId={params.id}
+            initialValue={client.business_info ?? ''}
+            lastUpdatedLabel="Visible to the coachee and their coach"
+          />
         </section>
 
         <section>

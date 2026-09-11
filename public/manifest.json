@@ -1,7 +1,7 @@
 {
   "name": "Business Coaching Accelerator (powered by Switch Direction)",
   "short_name": "BCA",
-  "description": "Homework, progress tracking, targets, and profiles for coaches and clients on the Business Coaching Accelerator programme.",
+  "description": "Business information, progress tracking, targets, and profiles for coaches and clients on the Business Coaching Accelerator programme.",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#f4f0fa",

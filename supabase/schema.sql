@@ -16,6 +16,7 @@ create table profiles (
   full_name text not null default '',
   avatar_url text,
   bio text default '',
+  business_info text default '', -- coachee's free-text "about my business & growth goals"
   coach_id uuid references profiles(id) on delete set null, -- set only for clients
   created_at timestamptz not null default now()
 );
@@ -31,34 +32,6 @@ create table invites (
   token uuid not null default uuid_generate_v4(),
   status text not null default 'pending' check (status in ('pending', 'claimed', 'revoked')),
   created_at timestamptz not null default now()
-);
-
--- ------------------------------------------------------------
--- HOMEWORK
--- Assigned by a coach to a specific client.
--- ------------------------------------------------------------
-create table homework (
-  id uuid primary key default uuid_generate_v4(),
-  coach_id uuid not null references profiles(id) on delete cascade,
-  client_id uuid not null references profiles(id) on delete cascade,
-  title text not null,
-  description text default '',
-  due_date date,
-  status text not null default 'assigned' check (status in ('assigned', 'submitted', 'reviewed')),
-  created_at timestamptz not null default now()
-);
-
--- ------------------------------------------------------------
--- HOMEWORK SUBMISSIONS
--- Client's response: text + optional file/image.
--- ------------------------------------------------------------
-create table homework_submissions (
-  id uuid primary key default uuid_generate_v4(),
-  homework_id uuid not null references homework(id) on delete cascade,
-  client_id uuid not null references profiles(id) on delete cascade,
-  text_response text default '',
-  file_url text,
-  submitted_at timestamptz not null default now()
 );
 
 -- ------------------------------------------------------------
@@ -84,8 +57,6 @@ create table progress_entries (
 
 alter table profiles enable row level security;
 alter table invites enable row level security;
-alter table homework enable row level security;
-alter table homework_submissions enable row level security;
 alter table progress_entries enable row level security;
 
 -- Helper: is the current user a coach, and whose client is X?
@@ -150,30 +121,6 @@ create policy "Coaches manage their own invites"
 create policy "Anyone can read an invite by token to claim it"
   on invites for select
   using (true);
-
--- ---- HOMEWORK ----
-create policy "Coaches manage homework for their clients"
-  on homework for all
-  using (coach_id = auth.uid())
-  with check (coach_id = auth.uid());
-
-create policy "Clients can view their own homework"
-  on homework for select
-  using (client_id = auth.uid());
-
-create policy "Clients can update status of their own homework"
-  on homework for update
-  using (client_id = auth.uid());
-
--- ---- HOMEWORK SUBMISSIONS ----
-create policy "Clients manage their own submissions"
-  on homework_submissions for all
-  using (client_id = auth.uid())
-  with check (client_id = auth.uid());
-
-create policy "Coaches can view submissions from their clients"
-  on homework_submissions for select
-  using (is_coach_of(client_id));
 
 -- ---- PROGRESS ENTRIES ----
 create policy "Clients manage their own progress entries"
@@ -379,14 +326,6 @@ create policy "Coaches can transfer their own clients to a teammate"
     and coach_id in (select coach_id from business_members where business_id in (select my_business_ids()))
   );
 
-create policy "Business teammates can view homework"
-  on homework for select
-  using (shares_business_with(client_id));
-
-create policy "Business teammates can view homework submissions"
-  on homework_submissions for select
-  using (shares_business_with(client_id));
-
 create policy "Business teammates can view progress entries"
   on progress_entries for select
   using (shares_business_with(client_id));
@@ -462,10 +401,6 @@ values ('avatars', 'avatars', true)
 on conflict (id) do nothing;
 
 insert into storage.buckets (id, name, public)
-values ('homework-files', 'homework-files', false)
-on conflict (id) do nothing;
-
-insert into storage.buckets (id, name, public)
 values ('progress-photos', 'progress-photos', false)
 on conflict (id) do nothing;
 
@@ -481,19 +416,6 @@ create policy "Users can upload their own avatar"
 create policy "Users can update their own avatar"
   on storage.objects for update
   using (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text);
-
--- Homework files: owner (client) can upload/read; their coach can read
-create policy "Clients can upload their own homework files"
-  on storage.objects for insert
-  with check (bucket_id = 'homework-files' and (storage.foldername(name))[1] = auth.uid()::text);
-
-create policy "Clients can read their own homework files"
-  on storage.objects for select
-  using (bucket_id = 'homework-files' and (storage.foldername(name))[1] = auth.uid()::text);
-
-create policy "Coaches can read their clients' homework files"
-  on storage.objects for select
-  using (bucket_id = 'homework-files' and is_coach_of(((storage.foldername(name))[1])::uuid));
 
 -- Progress photos: same pattern
 create policy "Clients can upload their own progress photos"

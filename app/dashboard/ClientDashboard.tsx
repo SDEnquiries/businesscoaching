@@ -3,16 +3,10 @@ import { createClient } from '@/lib/supabase/server';
 import NavBar from '@/components/NavBar';
 import QuickAvatarUpload from '@/components/QuickAvatarUpload';
 import ExpandableCard from '@/components/ExpandableCard';
-import HomeworkItem from './HomeworkItem';
+import BusinessInfoForm from '@/app/business-info/BusinessInfoForm';
 
 export default async function ClientDashboard({ profile }: { profile: any }) {
   const supabase = createClient();
-
-  const { data: homework } = await supabase
-    .from('homework')
-    .select('*')
-    .eq('client_id', profile.id)
-    .order('created_at', { ascending: false });
 
   const { data: entries } = await supabase
     .from('progress_entries')
@@ -48,9 +42,6 @@ export default async function ClientDashboard({ profile }: { profile: any }) {
     businessNames = (coachBusinesses ?? []).map((b: any) => b.businesses?.name).filter(Boolean);
   }
 
-  const pending = homework?.filter((h) => h.status === 'assigned') ?? [];
-  const completed = homework?.filter((h) => h.status !== 'assigned') ?? [];
-  const latestHomework = homework?.[0];
   const lastEntry = entries?.[0];
 
   const targetRows = targets ?? [];
@@ -99,8 +90,10 @@ export default async function ClientDashboard({ profile }: { profile: any }) {
 
         <div className="grid grid-cols-2 gap-4">
           <div className="card text-center">
-            <p className="text-3xl font-semibold text-brand-600">{pending.length}</p>
-            <p className="text-xs text-gray-500 mt-1">Homework to do</p>
+            <p className="text-3xl font-semibold text-brand-600">
+              {targetRows.length > 0 ? `${achievedTargets}/${targetRows.length}` : '—'}
+            </p>
+            <p className="text-xs text-gray-500 mt-1">Targets achieved</p>
           </div>
           <div className="card text-center">
             <p className="text-3xl font-semibold text-brand-600">
@@ -111,41 +104,16 @@ export default async function ClientDashboard({ profile }: { profile: any }) {
         </div>
 
         <ExpandableCard
-          icon="📚"
-          title="Homework"
-          summary={
-            latestHomework
-              ? `Latest: ${latestHomework.title} — ${latestHomework.status}`
-              : 'Nothing assigned yet'
-          }
-          defaultOpen={pending.length > 0}
+          icon="🧭"
+          title="Business information"
+          summary={profile.business_info ? profile.business_info.slice(0, 80) + (profile.business_info.length > 80 ? '…' : '') : 'Add info about your business'}
+          defaultOpen={!profile.business_info}
         >
-          <div className="space-y-4">
-            {pending.length > 0 && (
-              <div>
-                <p className="text-xs text-gray-400 mb-2 uppercase tracking-wide">To do</p>
-                <div className="grid gap-3">
-                  {pending.map((hw) => (
-                    <HomeworkItem key={hw.id} homework={hw} />
-                  ))}
-                </div>
-              </div>
-            )}
-            {completed.length > 0 && (
-              <div>
-                <p className="text-xs text-gray-400 mb-2 uppercase tracking-wide">Completed</p>
-                <div className="grid gap-3">
-                  {completed.map((hw) => (
-                    <HomeworkItem key={hw.id} homework={hw} />
-                  ))}
-                </div>
-              </div>
-            )}
-            {homework && homework.length === 0 && <p className="text-gray-500 text-sm">Nothing here yet.</p>}
-            <Link href="/homework" className="text-brand-600 text-sm hover:underline inline-block">
-              View full homework page →
-            </Link>
-          </div>
+          <BusinessInfoForm
+            clientId={profile.id}
+            initialValue={profile.business_info ?? ''}
+            lastUpdatedLabel="Visible to you and your coach"
+          />
         </ExpandableCard>
 
         <ExpandableCard

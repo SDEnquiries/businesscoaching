@@ -50,8 +50,8 @@ export default async function BusinessDetailPage({ params }: { params: { id: str
 
   const clientIds = clients.map((c) => c.id);
 
-  const { data: homeworkAll } = await supabase
-    .from('homework')
+  const { data: targetsAll } = await supabase
+    .from('targets')
     .select('status')
     .in('client_id', clientIds.length > 0 ? clientIds : ['00000000-0000-0000-0000-000000000000']);
 
@@ -60,8 +60,8 @@ export default async function BusinessDetailPage({ params }: { params: { id: str
     .select('mood_rating')
     .in('client_id', clientIds.length > 0 ? clientIds : ['00000000-0000-0000-0000-000000000000']);
 
-  const totalHomework = homeworkAll?.length ?? 0;
-  const completedHomework = homeworkAll?.filter((h) => h.status !== 'assigned').length ?? 0;
+  const totalTargets = targetsAll?.length ?? 0;
+  const achievedTargets = targetsAll?.filter((t) => t.status === 'achieved').length ?? 0;
   const moodValues = (entriesAll ?? []).filter((e) => e.mood_rating).map((e) => e.mood_rating as number);
   const avgMood = moodValues.length > 0 ? (moodValues.reduce((a, b) => a + b, 0) / moodValues.length).toFixed(1) : null;
 
@@ -92,9 +92,9 @@ export default async function BusinessDetailPage({ params }: { params: { id: str
             </div>
             <div>
               <p className="text-2xl font-semibold text-brand-600">
-                {completedHomework}/{totalHomework}
+                {totalTargets > 0 ? `${achievedTargets}/${totalTargets}` : '—'}
               </p>
-              <p className="text-xs text-gray-500">Homework completed</p>
+              <p className="text-xs text-gray-500">Targets achieved</p>
             </div>
             <div>
               <p className="text-2xl font-semibold text-brand-600">{avgMood ?? '—'}</p>

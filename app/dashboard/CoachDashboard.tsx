@@ -14,12 +14,13 @@ export default async function CoachDashboard({ profile }: { profile: any }) {
 
   const clientIds = (clients ?? []).map((c) => c.id);
 
-  const { data: homeworkAll } = await supabase
-    .from('homework')
+  const { data: targetsAll } = await supabase
+    .from('targets')
     .select('status')
-    .eq('coach_id', profile.id);
+    .in('client_id', clientIds.length > 0 ? clientIds : ['00000000-0000-0000-0000-000000000000']);
 
-  const pendingReview = homeworkAll?.filter((h) => h.status === 'submitted').length ?? 0;
+  const achievedTargets = targetsAll?.filter((t) => t.status === 'achieved').length ?? 0;
+  const totalTargets = targetsAll?.length ?? 0;
 
   const { count: resourceCount } = await supabase
     .from('resources')
@@ -103,8 +104,10 @@ export default async function CoachDashboard({ profile }: { profile: any }) {
             <p className="text-xs text-gray-500 mt-1">Coachees</p>
           </div>
           <div className="card text-center">
-            <p className="text-3xl font-semibold text-brand-600">{pendingReview}</p>
-            <p className="text-xs text-gray-500 mt-1">Submissions to review</p>
+            <p className="text-3xl font-semibold text-brand-600">
+              {totalTargets > 0 ? `${achievedTargets}/${totalTargets}` : '—'}
+            </p>
+            <p className="text-xs text-gray-500 mt-1">Targets achieved</p>
           </div>
           <div className="card text-center">
             <p className="text-3xl font-semibold text-brand-600">{resourceCount ?? 0}</p>
