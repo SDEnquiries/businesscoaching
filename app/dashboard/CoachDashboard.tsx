@@ -95,7 +95,7 @@ export default async function CoachDashboard({ profile }: { profile: any }) {
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-8">
         <div>
           <h1 className="text-2xl font-semibold">Welcome back, {profile.full_name.split(' ')[0]}</h1>
-          <p className="text-gray-500 text-sm mt-1">Here's where things stand.</p>
+          <p className="text-gray-500 text-sm mt-1">Here's how your coachees are progressing.</p>
         </div>
 
         <div className="grid grid-cols-3 gap-4">
@@ -118,7 +118,7 @@ export default async function CoachDashboard({ profile }: { profile: any }) {
         <div className="grid sm:grid-cols-3 gap-4">
           <Link href="/resources" className="card hover:shadow-md transition block">
             <p className="font-medium mb-1">📁 Resources</p>
-            <p className="text-sm text-gray-500">Share links, videos, files</p>
+            <p className="text-sm text-gray-500">Share the tools that help clients grow</p>
           </Link>
           <Link href="/business" className="card hover:shadow-md transition block">
             <p className="font-medium mb-1">🏢 Business</p>

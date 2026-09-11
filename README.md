@@ -1,4 +1,4 @@
-# Coaching Portal
+# Business Coaching Accelerator — coaching portal
 
 A secure web app for coaches to track client progress and business goals.
 Coaches and clients each get their own account; a coach only ever sees

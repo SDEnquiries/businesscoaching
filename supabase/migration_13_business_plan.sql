@@ -39,11 +39,24 @@ create policy "Business teammates can view business plan"
 
 -- Carry forward anything a coachee had already written in the old
 -- business_info field, as the "current state" section of their new plan.
-insert into business_plan (client_id, current_state)
-select id, business_info
-from profiles
-where role = 'client' and coalesce(business_info, '') <> ''
-on conflict (client_id) do nothing;
+-- Guarded because some projects never had this column (e.g. if migration
+-- 11 was never run) — in that case there's simply nothing to carry over.
+do $$
+begin
+  if exists (
+    select 1 from information_schema.columns
+    where table_name = 'profiles' and column_name = 'business_info'
+  ) then
+    execute $sql$
+      insert into business_plan (client_id, current_state)
+      select id, business_info
+      from profiles
+      where role = 'client' and coalesce(business_info, '') <> ''
+      on conflict (client_id) do nothing
+    $sql$;
+  end if;
+end $$;
 
--- The old field is now folded into business_plan.current_state above.
+-- The old field (if it ever existed) is now folded into
+-- business_plan.current_state above.
 alter table profiles drop column if exists business_info;

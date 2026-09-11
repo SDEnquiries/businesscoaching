@@ -34,7 +34,8 @@ export default function LoginPage() {
         <div className="mb-4 flex justify-center">
           <Logo size={72} textSize="lg" align="center" />
         </div>
-        <h1 className="text-xl font-semibold mb-6 text-center">Log in</h1>
+        <h1 className="text-xl font-semibold mb-1 text-center">Welcome back</h1>
+        <p className="text-sm text-gray-500 text-center mb-6">Log in to pick up where you left off.</p>
 
         <label className="label">Email</label>
         <input

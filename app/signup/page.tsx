@@ -103,7 +103,8 @@ function SignupForm() {
         <div className="mb-4 flex justify-center">
           <Logo size={72} textSize="lg" align="center" />
         </div>
-        <h1 className="text-xl font-semibold mb-6 text-center">Create an account</h1>
+        <h1 className="text-xl font-semibold mb-1 text-center">Create your account</h1>
+        <p className="text-sm text-gray-500 text-center mb-6">Set up your coaching profile in a couple of minutes.</p>
 
         {!inviteToken && (
           <>
@@ -175,7 +176,7 @@ function SignupForm() {
         {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
 
         <button type="submit" className="btn-primary w-full" disabled={loading}>
-          {loading ? 'Creating account…' : 'Sign up'}
+          {loading ? 'Creating account…' : 'Create account'}
         </button>
 
         <p className="text-sm text-gray-600 mt-4 text-center">

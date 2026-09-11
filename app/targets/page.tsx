@@ -59,7 +59,7 @@ export default async function TargetsPage() {
           <p className="text-gray-500 text-sm mt-1">
             {rows.length > 0
               ? `${rows.length} month${rows.length === 1 ? '' : 's'} planned, ${achievedCount} achieved.`
-              : `Set up to ${PLAN_LENGTH_MONTHS} months of targets — you can always add more later.`}
+              : `Build up to ${PLAN_LENGTH_MONTHS} months of targets — you can always add more later.`}
           </p>
         </div>
 

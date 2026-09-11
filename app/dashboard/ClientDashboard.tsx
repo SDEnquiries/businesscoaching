@@ -115,7 +115,7 @@ export default async function ClientDashboard({ profile }: { profile: any }) {
           summary={
             plan?.current_state
               ? plan.current_state.slice(0, 80) + (plan.current_state.length > 80 ? '…' : '')
-              : 'Add your business plan'
+              : 'Start your business plan'
           }
           defaultOpen={!plan?.current_state}
         >
@@ -130,7 +130,7 @@ export default async function ClientDashboard({ profile }: { profile: any }) {
               ? `${achievedTargets} of ${targetRows.length} achieved${
                   highlightTarget ? ` — ${highlightTarget.title || 'this month'}` : ''
                 }`
-              : 'Set up your target plan'
+              : 'Build your target plan'
           }
         >
           <div className="space-y-3">
@@ -168,7 +168,7 @@ export default async function ClientDashboard({ profile }: { profile: any }) {
                 )}
               </div>
             ) : (
-              <p className="text-gray-500 text-sm">No targets set yet.</p>
+              <p className="text-gray-500 text-sm">No targets set yet — build your plan below.</p>
             )}
             <Link href="/targets" className="text-brand-600 text-sm hover:underline inline-block">
               View full target plan →
@@ -182,7 +182,7 @@ export default async function ClientDashboard({ profile }: { profile: any }) {
           summary={
             lastEntry
               ? `Last entry ${new Date(lastEntry.created_at).toLocaleDateString()}`
-              : 'Add your first entry'
+              : 'Log your first entry'
           }
         >
           <div className="space-y-3">
@@ -203,7 +203,7 @@ export default async function ClientDashboard({ profile }: { profile: any }) {
                 </div>
               ))
             ) : (
-              <p className="text-gray-500 text-sm">No entries yet.</p>
+              <p className="text-gray-500 text-sm">No entries yet — log your first one below.</p>
             )}
             <Link href="/progress" className="text-brand-600 text-sm hover:underline inline-block">
               View full progress log & add an entry →

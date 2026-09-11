@@ -55,7 +55,7 @@ export default async function ProgressPage() {
               </div>
             ))
           ) : (
-            <p className="text-gray-500">No entries yet — add your first one above.</p>
+            <p className="text-gray-500">No entries yet — log your first one above.</p>
           )}
         </div>
       </div>

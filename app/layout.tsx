@@ -3,7 +3,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Business Coaching Accelerator | powered by Switch Direction',
-  description: 'Business information, progress tracking, targets, and profiles for coaches and coachees on the Business Coaching Accelerator programme.',
+  description: 'The coaching hub for Business Coaching Accelerator clients — build your business plan, hit your monthly targets, and track results with your coach.',
   manifest: '/manifest.json',
   icons: {
     icon: [

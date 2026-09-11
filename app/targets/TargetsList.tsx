@@ -97,7 +97,7 @@ export default function TargetsList({
   }
 
   if (targets.length === 0) {
-    return <p className="text-gray-500">No months set up yet — add the first one below.</p>;
+    return <p className="text-gray-500">No targets yet — build your plan below.</p>;
   }
 
   return (
