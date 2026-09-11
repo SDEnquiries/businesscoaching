@@ -75,6 +75,7 @@ export default async function TargetsPage() {
           namesById={namesById}
           currentUserId={user.id}
           planLengthMonths={PLAN_LENGTH_MONTHS}
+          viewerIsCoach={false}
         />
 
         <AddTargetForm clientId={profile.id} defaultMonth={defaultMonth} nextMonthNumber={nextMonthNumber} />

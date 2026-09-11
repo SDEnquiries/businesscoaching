@@ -3,20 +3,57 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 
-export async function updateBusinessInfo(formData: FormData) {
+const BUSINESS_PLAN_FIELDS = ['current_state', 'vision', 'focus_areas', 'action_steps', 'obstacles'] as const;
+const BUSINESS_PLAN_FEEDBACK_FIELDS = [
+  'current_state_feedback',
+  'vision_feedback',
+  'focus_areas_feedback',
+  'action_steps_feedback',
+  'obstacles_feedback',
+] as const;
+
+// The coachee's own content for one section of their business plan
+// (current state, vision, focus areas, action steps, obstacles).
+export async function updateBusinessPlanField(formData: FormData) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
   const clientId = String(formData.get('client_id'));
-  const businessInfo = String(formData.get('business_info') ?? '');
+  const field = String(formData.get('field'));
+  if (!BUSINESS_PLAN_FIELDS.includes(field as (typeof BUSINESS_PLAN_FIELDS)[number])) {
+    throw new Error('Invalid field');
+  }
+  const value = String(formData.get('value') ?? '');
 
   // RLS (the client owns this row, or is the coach of this client) is what
-  // actually enforces who may write here — same rule as the "bio" field.
+  // actually enforces who may write here; which field is meant for the
+  // coachee vs the coach is enforced by which form calls which action.
   const { error } = await supabase
-    .from('profiles')
-    .update({ business_info: businessInfo })
-    .eq('id', clientId);
+    .from('business_plan')
+    .upsert({ client_id: clientId, [field]: value, updated_at: new Date().toISOString() }, { onConflict: 'client_id' });
+  if (error) throw error;
+
+  revalidatePath('/dashboard');
+  revalidatePath(`/clients/${clientId}`);
+}
+
+// The coach's feedback/suggestions on one section of a client's business plan.
+export async function updateBusinessPlanFeedback(formData: FormData) {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
+
+  const clientId = String(formData.get('client_id'));
+  const field = String(formData.get('field'));
+  if (!BUSINESS_PLAN_FEEDBACK_FIELDS.includes(field as (typeof BUSINESS_PLAN_FEEDBACK_FIELDS)[number])) {
+    throw new Error('Invalid field');
+  }
+  const value = String(formData.get('value') ?? '');
+
+  const { error } = await supabase
+    .from('business_plan')
+    .upsert({ client_id: clientId, [field]: value, updated_at: new Date().toISOString() }, { onConflict: 'client_id' });
   if (error) throw error;
 
   revalidatePath('/dashboard');
@@ -384,6 +421,7 @@ export async function saveTarget(formData: FormData) {
   const periodMonth = firstOfMonth(String(formData.get('period_month')));
   const title = String(formData.get('title') ?? '');
   const description = String(formData.get('description') ?? '');
+  const pillar = String(formData.get('pillar') ?? '');
   const targetValueRaw = formData.get('target_value');
   const targetValue = targetValueRaw && String(targetValueRaw) !== '' ? Number(targetValueRaw) : null;
   const targetUnit = String(formData.get('target_unit') ?? '');
@@ -405,6 +443,7 @@ export async function saveTarget(formData: FormData) {
       period_month: periodMonth,
       title,
       description,
+      pillar,
       target_value: targetValue,
       target_unit: targetUnit,
       actual_value: actualValue,
@@ -433,6 +472,24 @@ export async function deleteTarget(formData: FormData) {
   // RLS (client owns it, or is the coach of this client) is what actually
   // enforces who may delete which row.
   const { error } = await supabase.from('targets').delete().eq('id', id);
+  if (error) throw error;
+
+  revalidatePath('/targets');
+  revalidatePath(`/clients/${clientId}`);
+  revalidatePath('/dashboard');
+}
+
+// The coach's feedback/suggestions on one specific month's target.
+export async function updateTargetFeedback(formData: FormData) {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
+
+  const id = String(formData.get('id'));
+  const clientId = String(formData.get('client_id'));
+  const coachFeedback = String(formData.get('coach_feedback') ?? '');
+
+  const { error } = await supabase.from('targets').update({ coach_feedback: coachFeedback }).eq('id', id);
   if (error) throw error;
 
   revalidatePath('/targets');

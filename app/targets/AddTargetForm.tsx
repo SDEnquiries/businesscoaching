@@ -31,6 +31,10 @@ export default function AddTargetForm({
       </div>
       <input name="title" required placeholder="What's the target? (e.g. Sign 3 new clients)" className="input" />
       <textarea name="description" placeholder="Details (optional)" className="input" rows={2} />
+      <div>
+        <label className="label text-xs">Focus area (optional)</label>
+        <input name="pillar" placeholder="e.g. Sales, Team, Cash flow" className="input" />
+      </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="label text-xs">Target value (optional)</label>

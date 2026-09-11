@@ -16,7 +16,6 @@ create table profiles (
   full_name text not null default '',
   avatar_url text,
   bio text default '',
-  business_info text default '', -- coachee's free-text "about my business & growth goals"
   coach_id uuid references profiles(id) on delete set null, -- set only for clients
   created_at timestamptz not null default now()
 );
@@ -365,10 +364,12 @@ create table targets (
   period_month date not null, -- always the 1st of the month, e.g. 2026-09-01
   title text not null default '',
   description text default '',
+  pillar text default '', -- free-text focus area/category, e.g. "Sales", "Team", "Cash flow"
   target_value numeric,
   target_unit text default '',
   actual_value numeric,
   status text not null default 'not_started' check (status in ('not_started', 'in_progress', 'achieved', 'missed')),
+  coach_feedback text default '', -- coach's comments/suggestions on this month's target
   created_by uuid not null references profiles(id) on delete cascade,
   last_updated_by uuid references profiles(id) on delete set null,
   created_at timestamptz not null default now(),
@@ -394,6 +395,47 @@ create policy "Business teammates can view targets"
 
 create policy "Business teammates can view session notes"
   on session_notes for select
+  using (shares_business_with(client_id));
+
+-- ------------------------------------------------------------
+-- BUSINESS PLAN
+-- One row per client: a short free-text plan (current state,
+-- vision, focus areas, action steps, obstacles) plus a matching
+-- feedback field per section for the coach's comments/suggestions.
+-- The client fills in the main fields; the coach's own field is
+-- the "_feedback" columns. Both roles have full row access here
+-- (same trust model as the targets table above) — which field is
+-- meant for whom is enforced by the app's UI, not by the database.
+-- ------------------------------------------------------------
+create table business_plan (
+  client_id uuid primary key references profiles(id) on delete cascade,
+  current_state text default '',
+  current_state_feedback text default '',
+  vision text default '',
+  vision_feedback text default '',
+  focus_areas text default '',
+  focus_areas_feedback text default '',
+  action_steps text default '',
+  action_steps_feedback text default '',
+  obstacles text default '',
+  obstacles_feedback text default '',
+  updated_at timestamptz not null default now()
+);
+
+alter table business_plan enable row level security;
+
+create policy "Clients manage their own business plan"
+  on business_plan for all
+  using (client_id = auth.uid())
+  with check (client_id = auth.uid());
+
+create policy "Coaches manage business plan for their clients"
+  on business_plan for all
+  using (is_coach_of(client_id))
+  with check (is_coach_of(client_id));
+
+create policy "Business teammates can view business plan"
+  on business_plan for select
   using (shares_business_with(client_id));
 
 insert into storage.buckets (id, name, public)

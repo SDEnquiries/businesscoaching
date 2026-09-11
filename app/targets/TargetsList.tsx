@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { saveTarget, deleteTarget } from '@/app/actions';
+import { saveTarget, deleteTarget, updateTargetFeedback } from '@/app/actions';
 import DeleteButton from '@/components/DeleteButton';
 
 export type TargetRow = {
@@ -10,10 +10,12 @@ export type TargetRow = {
   period_month: string; // 'YYYY-MM-01'
   title: string;
   description: string | null;
+  pillar: string | null;
   target_value: number | null;
   target_unit: string | null;
   actual_value: number | null;
   status: 'not_started' | 'in_progress' | 'achieved' | 'missed';
+  coach_feedback: string | null;
   created_by: string;
   last_updated_by: string | null;
 };
@@ -53,15 +55,20 @@ export default function TargetsList({
   namesById,
   currentUserId,
   planLengthMonths = 12,
+  viewerIsCoach = false,
 }: {
   clientId: string;
   targets: TargetRow[];
   namesById: Record<string, string>;
   currentUserId: string;
   planLengthMonths?: number;
+  viewerIsCoach?: boolean;
 }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [editingFeedbackId, setEditingFeedbackId] = useState<string | null>(null);
+  const [savingFeedbackId, setSavingFeedbackId] = useState<string | null>(null);
+  const [feedbackDrafts, setFeedbackDrafts] = useState<Record<string, string>>({});
 
   const planStart = targets[0]?.period_month;
 
@@ -76,6 +83,17 @@ export default function TargetsList({
     await saveTarget(formData);
     setSavingId(null);
     setEditingId(null);
+  }
+
+  async function handleSaveFeedback(id: string, coachFeedback: string) {
+    const formData = new FormData();
+    formData.set('id', id);
+    formData.set('client_id', clientId);
+    formData.set('coach_feedback', coachFeedback);
+    setSavingFeedbackId(id);
+    await updateTargetFeedback(formData);
+    setSavingFeedbackId(null);
+    setEditingFeedbackId(null);
   }
 
   if (targets.length === 0) {
@@ -103,7 +121,14 @@ export default function TargetsList({
                       <span className="text-xs text-gray-400">·</span>
                       <span className="text-xs text-gray-400">{monthLabel(t.period_month)}</span>
                     </div>
-                    <p className="font-medium mt-1">{t.title || 'Untitled target'}</p>
+                    <p className="font-medium mt-1">
+                      {t.title || 'Untitled target'}
+                      {t.pillar && (
+                        <span className="ml-2 text-xs px-1.5 py-0.5 rounded bg-brand-50 text-brand-600 align-middle">
+                          {t.pillar}
+                        </span>
+                      )}
+                    </p>
                     {t.description && <p className="text-sm text-gray-600 mt-1">{t.description}</p>}
                   </div>
                   <span className={`text-xs px-2 py-1 rounded-full whitespace-nowrap ${STATUS_STYLE[t.status]}`}>
@@ -146,6 +171,64 @@ export default function TargetsList({
                     />
                   </div>
                 </div>
+
+                {(viewerIsCoach || t.coach_feedback) && (
+                  <div className="mt-3 pt-3 border-t border-gray-100">
+                    <p className="text-xs text-gray-400 mb-1">Coach feedback</p>
+                    {viewerIsCoach ? (
+                      editingFeedbackId === t.id ? (
+                        <div className="space-y-2">
+                          <textarea
+                            className="input"
+                            rows={3}
+                            placeholder="Add feedback or suggestions…"
+                            value={feedbackDrafts[t.id] ?? t.coach_feedback ?? ''}
+                            onChange={(e) =>
+                              setFeedbackDrafts((prev) => ({ ...prev, [t.id]: e.target.value }))
+                            }
+                          />
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              className="btn-primary text-sm"
+                              disabled={savingFeedbackId === t.id}
+                              onClick={() =>
+                                handleSaveFeedback(t.id, feedbackDrafts[t.id] ?? t.coach_feedback ?? '')
+                              }
+                            >
+                              {savingFeedbackId === t.id ? 'Saving…' : 'Save feedback'}
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-secondary text-sm"
+                              onClick={() => setEditingFeedbackId(null)}
+                              disabled={savingFeedbackId === t.id}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-start justify-between gap-3">
+                          <p className="text-sm text-gray-600 whitespace-pre-wrap flex-1 italic">
+                            {t.coach_feedback || <span className="text-gray-400 not-italic">No feedback yet</span>}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => setEditingFeedbackId(t.id)}
+                            className="text-xs text-brand-600 hover:underline whitespace-nowrap"
+                          >
+                            {t.coach_feedback ? 'Edit' : 'Add feedback'}
+                          </button>
+                        </div>
+                      )
+                    ) : (
+                      t.coach_feedback && (
+                        <p className="text-sm text-gray-600 whitespace-pre-wrap italic">{t.coach_feedback}</p>
+                      )
+                    )}
+                  </div>
+                )}
               </>
             ) : (
               <form
@@ -165,6 +248,10 @@ export default function TargetsList({
                   className="input"
                   rows={2}
                 />
+                <div>
+                  <label className="label text-xs">Focus area</label>
+                  <input name="pillar" defaultValue={t.pillar ?? ''} placeholder="e.g. Sales, Team, Cash flow" className="input" />
+                </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
                     <label className="label text-xs">Target value</label>

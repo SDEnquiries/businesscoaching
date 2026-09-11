@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import NavBar from '@/components/NavBar';
 import QuickAvatarUpload from '@/components/QuickAvatarUpload';
 import ExpandableCard from '@/components/ExpandableCard';
-import BusinessInfoForm from '@/app/business-info/BusinessInfoForm';
+import BusinessPlanForm from '@/app/business-plan/BusinessPlanForm';
 
 export default async function ClientDashboard({ profile }: { profile: any }) {
   const supabase = createClient();
@@ -23,6 +23,12 @@ export default async function ClientDashboard({ profile }: { profile: any }) {
   const { count: resourceCount } = await supabase
     .from('resources')
     .select('id', { count: 'exact', head: true });
+
+  const { data: plan } = await supabase
+    .from('business_plan')
+    .select('*')
+    .eq('client_id', profile.id)
+    .maybeSingle();
 
   const { data: coach } = profile.coach_id
     ? await supabase.from('profiles').select('id, full_name, avatar_url').eq('id', profile.coach_id).single()
@@ -105,15 +111,15 @@ export default async function ClientDashboard({ profile }: { profile: any }) {
 
         <ExpandableCard
           icon="🧭"
-          title="Business information"
-          summary={profile.business_info ? profile.business_info.slice(0, 80) + (profile.business_info.length > 80 ? '…' : '') : 'Add info about your business'}
-          defaultOpen={!profile.business_info}
+          title="Business plan"
+          summary={
+            plan?.current_state
+              ? plan.current_state.slice(0, 80) + (plan.current_state.length > 80 ? '…' : '')
+              : 'Add your business plan'
+          }
+          defaultOpen={!plan?.current_state}
         >
-          <BusinessInfoForm
-            clientId={profile.id}
-            initialValue={profile.business_info ?? ''}
-            lastUpdatedLabel="Visible to you and your coach"
-          />
+          <BusinessPlanForm clientId={profile.id} plan={plan ?? {}} canEditContent canEditFeedback={false} />
         </ExpandableCard>
 
         <ExpandableCard
@@ -131,7 +137,14 @@ export default async function ClientDashboard({ profile }: { profile: any }) {
             {highlightTarget ? (
               <div className="border-b border-gray-100 pb-3">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-medium text-sm">{highlightTarget.title || 'Untitled target'}</span>
+                  <span className="font-medium text-sm">
+                    {highlightTarget.title || 'Untitled target'}
+                    {highlightTarget.pillar && (
+                      <span className="ml-2 text-xs px-1.5 py-0.5 rounded bg-brand-50 text-brand-600 align-middle">
+                        {highlightTarget.pillar}
+                      </span>
+                    )}
+                  </span>
                   <span className="text-xs text-gray-400">
                     {new Date(`${highlightTarget.period_month}T00:00:00`).toLocaleDateString(undefined, {
                       month: 'long',

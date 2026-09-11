@@ -9,9 +9,9 @@ their own clients' data (enforced at the database level, not just in the UI).
 - Email/password signup and login for two roles: **coach** and **client**
 - Coaches can invite clients by email (shareable link) or clients can self-register and pick a coach from a list
 - Client profile with photo upload, name, and bio
-- Business information: a free-text field where the coachee describes their business and how they want it to grow, editable by both the coachee and their coach
+- Business plan: five free-text sections (current state, vision, focus areas, action steps, obstacles & support) filled in by the coachee and viewable by their coach, each with its own space for the coach to leave feedback and suggestions
 - Client progress log: free-text journal entries plus structured fields (mood, energy) and an optional photo per entry
-- Monthly targets: a rolling plan of up to 12 calendar months (extendable indefinitely) with a goal, optional target/actual values, and a status; either the coach or the client can set or update a month
+- Monthly targets: a rolling plan of up to 12 calendar months (extendable indefinitely) with a goal, an optional focus area/pillar tag, optional target/actual values, a status, and a coach feedback field — either the coach or the client can set or update a month's target
 - Row Level Security in the database means coach A can never read coach B's clients, even via a bug in the app code
 
 ## 1. Create your Supabase project (free)
@@ -72,5 +72,6 @@ Every time you push to GitHub, Vercel redeploys automatically.
 
 Some natural next additions, roughly in order of effort:
 - Password reset emails (Supabase Auth supports this out of the box — just needs a "forgot password" page)
-- Coach-side reminders/notifications when a coachee updates their business information
-- A version history for business information, instead of a single overwritable field
+- Coach-side reminders/notifications when a coachee updates their business plan
+- A version history for the business plan, instead of each section being a single overwritable field
+- Turning "focus area" into a fixed, coach-managed list of pillars per business, rather than free text typed per target

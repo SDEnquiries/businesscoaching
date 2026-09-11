@@ -9,7 +9,7 @@ import DeleteButton from '@/components/DeleteButton';
 import TargetsList, { type TargetRow } from '@/app/targets/TargetsList';
 import AddTargetForm from '@/app/targets/AddTargetForm';
 import GeneratePlanForm from '@/app/targets/GeneratePlanForm';
-import BusinessInfoForm from '@/app/business-info/BusinessInfoForm';
+import BusinessPlanForm from '@/app/business-plan/BusinessPlanForm';
 
 const PLAN_LENGTH_MONTHS = 12;
 
@@ -53,6 +53,12 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
     .select('*')
     .eq('client_id', params.id)
     .order('period_month', { ascending: true });
+
+  const { data: plan } = await supabase
+    .from('business_plan')
+    .select('*')
+    .eq('client_id', params.id)
+    .maybeSingle();
 
   const targetRows = (targets ?? []) as TargetRow[];
   const namesById: Record<string, string> = {
@@ -189,12 +195,8 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold mb-3">Business information</h2>
-          <BusinessInfoForm
-            clientId={params.id}
-            initialValue={client.business_info ?? ''}
-            lastUpdatedLabel="Visible to the coachee and their coach"
-          />
+          <h2 className="text-xl font-semibold mb-3">Business plan</h2>
+          <BusinessPlanForm clientId={params.id} plan={plan ?? {}} canEditContent={false} canEditFeedback />
         </section>
 
         <section>
@@ -218,6 +220,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
               namesById={namesById}
               currentUserId={user.id}
               planLengthMonths={PLAN_LENGTH_MONTHS}
+              viewerIsCoach
             />
             <AddTargetForm
               clientId={params.id}
